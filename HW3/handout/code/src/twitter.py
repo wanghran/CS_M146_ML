@@ -158,7 +158,7 @@ def performance(y_true, y_pred, metric="accuracy"):
     elif metric == "f1_score":
         return metrics.f1_score(y_true, y_label)
     elif metric == "auroc":
-        return metrics.roc_auc_score(y_true, y_label)
+        return metrics.roc_auc_score(y_true, y_pred)
     ### ========== TODO : END ========== ###
 
 
@@ -293,19 +293,19 @@ def main() :
     train_y = y[0:560]
     test_y = y[560:]
 
-    print train_X.shape
     # part 2: create stratified folds (5-fold CV)
     kf = StratifiedKFold(train_y, n_folds=5)
 
     # part 2: for each metric, select optimal hyperparameter for linear-kernel SVM using CV
     # print(select_param_linear(train_X, train_y, kf, metric="auroc"))
     # part 3: train linear-kernel SVMs with selected hyperparameters
-    clf = SVC(C=10.0, kernel="linear")
-    clf.fit(train_X, train_y)
-    for metric in metric_list:
-        print('The performance of ' + metric + ' is ' + '%.5f', performance_test(clf, test_X, test_y, metric=metric))
+    # clf = SVC(C=1.0, kernel="linear")
+    # clf.fit(train_X, train_y)
+    # for metric in metric_list:
+    #     print('The performance of ' + metric + ' is ' + '%.5f', performance_test(clf, test_X, test_y, metric=metric))
     # part 3: report performance on test data
-    
+    # print score_plot(train_X, train_y, kf)
+    print select_param_linear(train_X, train_y, kf, metric="auroc")
     ### ========== TODO : END ========== ###
     
     

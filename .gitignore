@@ -1,3 +1,7 @@
 .DS_Store
 .project
 .classpath
+*.xml
+settings.json
+launch.json
+M146.xmind
