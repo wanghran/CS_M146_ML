@@ -139,13 +139,13 @@ class Cluster(object) :
         ### ========== TODO : START ========== ###
         # part b: implement
         medoid = None
-        min_dis = np.Infinity
+        all_dis = []
         for point in self.points:
             dis = 0
             for other_point in self.points:
                 dis += point.distance(other_point)
-            if dis < min_dis:
-                medoid = point
+            all_dis.append(dis)
+        medoid = self.points[all_dis.index(min(all_dis))]
         return medoid
         ### ========== TODO : END ========== ###
     

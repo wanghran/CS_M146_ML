@@ -155,7 +155,16 @@ def cheat_init(points) :
     """
     ### ========== TODO : START ========== ###
     # part f: implement
-    initial_points = []
+    lab = {}
+    for point in points:
+        if point.label not in lab:
+            lab[point.label] = [point]
+        else:
+            lab[point.label] += [point]
+    C_set = ClusterSet()
+    for key in lab:
+        C_set.add(Cluster(lab.get(key)))
+    initial_points = C_set.medoids()
     return initial_points
     ### ========== TODO : END ========== ###
 
@@ -222,8 +231,8 @@ def kMeans(points, k, init='random', plot=False) :
                 dis.append(point.distance(center))
             k_clusters.members[dis.index(min(dis))].points.append(point)
 
-        # plot_clusters(k_clusters, "plot with centroids",
-        #               ClusterSet.centroids)
+        plot_clusters(k_clusters, "plot with centroids with k =3",
+                      ClusterSet.centroids)
 
     if plot:
         plot_clusters(k_clusters, "plot with centroids",
@@ -256,8 +265,7 @@ def kMedoids(points, k, init='random', plot=False) :
         prev_clu = ClusterSet()
         prev_clu.members = k_clusters.members
 
-        for cluster in k_clusters.members:
-            cent.append(cluster.medoid())
+        cent = k_clusters.medoids()
 
         k_clusters = ClusterSet()
         k_clusters.members = [Cluster([point]) for point in cent]
@@ -272,6 +280,9 @@ def kMedoids(points, k, init='random', plot=False) :
 
         # plot_clusters(k_clusters, "plot with centroids",
         #               ClusterSet.centroids)
+        plot_clusters(k_clusters, "plot with medoids",
+                  ClusterSet.medoids)
+
 
     if plot:
         plot_clusters(k_clusters, "plot with medoids",
@@ -290,9 +301,9 @@ def main() :
     ### ========== TODO : START ========== ###
     # part d, part e, part f: cluster toy dataset
     np.random.seed(1234)
-    points = generate_points_2d(5)
-    # kMeans(points, 3, plot=True)
-    kMedoids(points, 3, plot=True)
+    points = generate_points_2d(20)
+    # kMeans(points, 3, plot=False)
+    kMedoids(points, 3, plot=False, init='cheat')
     ### ========== TODO : END ========== ###
     
     
