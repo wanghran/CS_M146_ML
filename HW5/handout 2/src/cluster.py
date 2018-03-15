@@ -141,13 +141,9 @@ class Cluster(object) :
         medoid = None
         min_dis = np.Infinity
         for point in self.points:
-            p_x = point.attrs[0]
-            p_y = point.attrs[1]
             dis = 0
             for other_point in self.points:
-                op_x = other_point.attrs[0]
-                op_y = other_point.attrs[1]
-                dis += np.sqrt((op_x - p_x)**2 + (op_y - p_y)**2)
+                dis += point.distance(other_point)
             if dis < min_dis:
                 medoid = point
         return medoid

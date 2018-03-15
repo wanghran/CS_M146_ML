@@ -197,43 +197,37 @@ def kMeans(points, k, init='random', plot=False) :
     else:
         init_cen = random_init(points, k)
 
-    for i in range(len(init_cen)):
-        cluster = Cluster([init_cen[i]])
-        k_clusters.add(cluster)
-
-    for point in points:
-        if point in init_cen:
-            continue
-        dis = []
-        for center in init_cen:
-            dis.append(np.sqrt((point.attrs[0] - center.attrs[0]) ** 2 +
-                               (point.attrs[1] - center.attrs[1]) ** 2))
-        k_clusters.members[dis.index(min(dis))].points.append(point)
+    k_clusters.members = [Cluster([point]) for point in init_cen]
     prev_clu = ClusterSet()
-    for i in range(k):
-        prev_clu.add(Cluster([points[0]]))
 
-    while 1:
-        print k_clusters.equivalent(prev_clu)
-
-        if k_clusters.equivalent(prev_clu):
-            break
+    while not k_clusters.equivalent(prev_clu):
 
         cent = []
-        prev_clu = copy.deepcopy(k_clusters)
+        
+        prev_clu = ClusterSet()
+        prev_clu.members = k_clusters.members
 
         for cluster in k_clusters.members:
             cent.append(cluster.centroid())
-            cluster.reset()
+
+        k_clusters = ClusterSet()
+        for i in range(k):
+            k_clusters.add(Cluster([]))
+
         for point in points:
             dis = []
+            if point in cent:
+                continue
             for center in cent:
-                dis.append(np.sqrt((point.attrs[0] - center.attrs[0]) ** 2 +
-                                   (point.attrs[1] - center.attrs[1])) ** 2)
+                dis.append(point.distance(center))
             k_clusters.members[dis.index(min(dis))].points.append(point)
 
+        # plot_clusters(k_clusters, "plot with centroids",
+        #               ClusterSet.centroids)
+
     if plot:
-        plot_clusters(k_clusters, "plot with centroids", k_clusters.centroids())
+        plot_clusters(k_clusters, "plot with centroids",
+                      ClusterSet.centroids)
 
     return k_clusters
     ### ========== TODO : END ========== ###
@@ -247,6 +241,41 @@ def kMedoids(points, k, init='random', plot=False) :
     ### ========== TODO : START ========== ###
     # part e: implement
     k_clusters = ClusterSet()
+    if init == 'cheat':
+        init_cen = cheat_init(points)
+    else:
+        init_cen = random_init(points, k)
+
+    k_clusters.members = [Cluster([point]) for point in init_cen]
+    prev_clu = ClusterSet()
+
+    while not k_clusters.equivalent(prev_clu):
+
+        cent = []
+
+        prev_clu = ClusterSet()
+        prev_clu.members = k_clusters.members
+
+        for cluster in k_clusters.members:
+            cent.append(cluster.medoid())
+
+        k_clusters = ClusterSet()
+        k_clusters.members = [Cluster([point]) for point in cent]
+
+        for point in points:
+            dis = []
+            if point in cent:
+                continue
+            for center in cent:
+                dis.append(point.distance(center))
+            k_clusters.members[dis.index(min(dis))].points.append(point)
+
+        # plot_clusters(k_clusters, "plot with centroids",
+        #               ClusterSet.centroids)
+
+    if plot:
+        plot_clusters(k_clusters, "plot with medoids",
+                      ClusterSet.medoids)
 
     return k_clusters
     ### ========== TODO : END ========== ###
@@ -261,18 +290,9 @@ def main() :
     ### ========== TODO : START ========== ###
     # part d, part e, part f: cluster toy dataset
     np.random.seed(1234)
-    points = generate_points_2d(3)
-    kMeans(points, 3)
-    # a = Point('1', '1', [1.0, 1.0])
-    # b = Point('2', '2', [2.0, 2.0])
-    # c = Point('3', '3', [3.0, 3.0])
-    #
-    # clu1 = ClusterSet()
-    # clu2 = ClusterSet()
-    # clu1.add(Cluster([a, b, c]))
-    # clu2.add(Cluster([a, b, c]))
-    # print clu2
-    # print clu1.equivalent(clu2)
+    points = generate_points_2d(5)
+    # kMeans(points, 3, plot=True)
+    kMedoids(points, 3, plot=True)
     ### ========== TODO : END ========== ###
     
     
