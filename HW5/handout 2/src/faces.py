@@ -52,7 +52,7 @@ def build_face_image_points(X, y) :
     return points
 
 
-def plot_clusters(clusters, title, average) :
+def plot_clusters(clusters, title, points) :
     """
     Plot clusters along with average points of each cluster.
 
@@ -69,7 +69,7 @@ def plot_clusters(clusters, title, average) :
     np.random.seed(20)
     label = 0
     colors = {}
-    centroids = average(clusters)
+    centroids = points
     for c in centroids :
         coord = c.attrs
         plt.plot(coord[0],coord[1], 'ok', markersize=12)
@@ -131,7 +131,7 @@ def random_init(points, k) :
     """
     ### ========== TODO : START ========== ###
     # part c: implement (hint: use np.random.choice)
-    initial_points = np.random.choice(points, k)
+    initial_points = np.random.choice(points, k, replace=False)
     return initial_points
     ### ========== TODO : END ========== ###
 
@@ -207,6 +207,13 @@ def kMeans(points, k, init='random', plot=False) :
         init_cen = random_init(points, k)
 
     k_clusters.members = [Cluster([point]) for point in init_cen]
+
+    # for point in points:
+    #     if point in init_cen:
+    #         continue
+    #     else:
+    #         k_clusters.members[0].points.append(point)
+        
     prev_clu = ClusterSet()
 
     while not k_clusters.equivalent(prev_clu):
@@ -215,6 +222,7 @@ def kMeans(points, k, init='random', plot=False) :
         
         prev_clu = ClusterSet()
         prev_clu.members = k_clusters.members
+
 
         for cluster in k_clusters.members:
             cent.append(cluster.centroid())
@@ -230,13 +238,13 @@ def kMeans(points, k, init='random', plot=False) :
             for center in cent:
                 dis.append(point.distance(center))
             k_clusters.members[dis.index(min(dis))].points.append(point)
-
-        plot_clusters(k_clusters, "plot with centroids with k =3",
-                      ClusterSet.centroids)
+        
+        plot_clusters(k_clusters, "plot with centroids",
+                      cent)
 
     if plot:
         plot_clusters(k_clusters, "plot with centroids",
-                      ClusterSet.centroids)
+                      k_clusters.centroids())
 
     return k_clusters
     ### ========== TODO : END ========== ###
@@ -281,12 +289,12 @@ def kMedoids(points, k, init='random', plot=False) :
         # plot_clusters(k_clusters, "plot with centroids",
         #               ClusterSet.centroids)
         plot_clusters(k_clusters, "plot with medoids",
-                  ClusterSet.medoids)
+                  cent)
 
 
     if plot:
         plot_clusters(k_clusters, "plot with medoids",
-                      ClusterSet.medoids)
+                      k_clusters.medoids())
 
     return k_clusters
     ### ========== TODO : END ========== ###
@@ -302,7 +310,7 @@ def main() :
     # part d, part e, part f: cluster toy dataset
     np.random.seed(1234)
     points = generate_points_2d(20)
-    # kMeans(points, 3, plot=False)
+    # kMeans(points, 3, plot=False, init='cheat')
     kMedoids(points, 3, plot=False, init='cheat')
     ### ========== TODO : END ========== ###
     
