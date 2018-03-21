@@ -9,3 +9,4 @@ __pycache__
 tasks.json
 *.pyc
 *.png
+.idea
